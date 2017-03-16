@@ -7,6 +7,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 
@@ -14,6 +16,8 @@ import java.net.InetSocketAddress;
  * Created by mahui on 7/28/16.
  */
 public class EchoServer {
+
+    Logger logger = LoggerFactory.getLogger(EchoServer.class);
 
     int port;
 
@@ -40,7 +44,7 @@ public class EchoServer {
 
         try {
             ChannelFuture future = serverBootstrap.bind().sync();
-            System.out.println(EchoServer.class.getName() + " start at " + future.channel().localAddress());
+            logger.info(EchoServer.class.getName() + " start at " + future.channel().localAddress());
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

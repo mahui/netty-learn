@@ -8,6 +8,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 
@@ -16,6 +20,8 @@ import java.net.InetSocketAddress;
  */
 public class EchoClient {
 
+
+    Logger logger = LoggerFactory.getLogger(EchoClient.class);
     private String host;
     private int port;
     private EchoClient(){}
@@ -41,6 +47,11 @@ public class EchoClient {
 
         try {
             ChannelFuture future = bootstrap.connect().sync();
+            future.addListener(new GenericFutureListener<Future<? super Void>>() {
+                public void operationComplete(Future<? super Void> future) throws Exception {
+                    logger.info("operation complete");
+                }
+            });
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -50,7 +61,6 @@ public class EchoClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }
