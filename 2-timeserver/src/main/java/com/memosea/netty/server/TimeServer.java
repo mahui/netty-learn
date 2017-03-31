@@ -24,19 +24,20 @@ public class TimeServer {
 
     public static void main(String[] args) {
         ServerBootstrap bootstrap = new ServerBootstrap();
+        NioEventLoopGroup boss = new NioEventLoopGroup();
+        NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
-            ChannelFuture future = bootstrap.localAddress(new InetSocketAddress("127.0.0.1",8990)).channel(NioServerSocketChannel.class).group(new NioEventLoopGroup()).childHandler(new ChannelInitializer<SocketChannel>() {
+            ChannelFuture future = bootstrap.localAddress(new InetSocketAddress("127.0.0.1",8990)).channel(NioServerSocketChannel.class).group(boss,worker).childHandler(new ChannelInitializer<SocketChannel>() {
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new TimeServerHandler());
                 }
             }).bind().sync();
-            future.addListener(new GenericFutureListener<Future<? super Void>>() {
-                public void operationComplete(Future<? super Void> future) throws Exception {
-                    logger.info(String.valueOf(future.isCancelled()));
-                }
-            });
+            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            boss.shutdownGracefully();
+            worker.shutdownGracefully();
         }
     }
 }

@@ -19,7 +19,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         logger.info("server channel read " + msg);
-        ctx.write(msg);
+        ctx.writeAndFlush(msg);
     }
 
     @Override
